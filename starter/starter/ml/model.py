@@ -1,8 +1,11 @@
+import joblib
 from sklearn.metrics import fbeta_score, precision_score, recall_score
+from sklearn.pipeline import Pipeline
+from xgboost import XGBClassifier
 
 
 # Optional: implement hyperparameter tuning.
-def train_model(X_train, y_train):
+def train_model(X_train, y_train) -> float:
     """
     Trains a machine learning model and returns it.
 
@@ -18,7 +21,10 @@ def train_model(X_train, y_train):
         Trained machine learning model.
     """
 
-    pass
+    model = XGBClassifier()
+    model.fit(X_train, y_train)
+
+    return model
 
 
 def compute_model_metrics(y, preds):
@@ -57,4 +63,16 @@ def inference(model, X):
     preds : np.array
         Predictions from the model.
     """
-    pass
+    preds = model.predict(X)
+    return preds
+
+
+def save_the_model(model):
+    """ Save the model to a file.
+
+    Inputs
+    ------
+    model :
+        Trained machine learning model.
+    """
+    joblib.dump(model, "./model/model.pkl")

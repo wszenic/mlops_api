@@ -1,5 +1,41 @@
 import numpy as np
-from sklearn.preprocessing import LabelBinarizer, OneHotEncoder
+import pandas as pd
+from sklearn.compose import ColumnTransformer
+from sklearn.impute import SimpleImputer
+from sklearn.pipeline import FeatureUnion, make_pipeline
+from sklearn.preprocessing import LabelBinarizer, LabelEncoder, OneHotEncoder
+from xgboost import XGBClassifier
+
+
+def create_preprocessing_pipeline():
+    """ Create the preprocessing pipeline.
+
+    Returns
+    -------
+    pipeline : sklearn.pipeline.Pipeline
+        Pipeline with preprocessing steps.
+    """
+
+    categorical_pipeline = make_pipeline(
+        SimpleImputer(strategy='constant', missing_values='?', fill_value='np.nan'),
+        OneHotEncoder(sparse=False, handle_unknown='ignore')
+    )
+
+    passthrough_pipeline = make_pipeline('passthrough')
+
+    target_pipeline = make_pipeline(
+        LabelEncoder(), reminder='drop'
+    )
+
+    pipeline = ColumnTransformer(transformers=[
+        ('categorical', categorical_pipeline, ['workclass', 'education', 'marital-status',
+                                               'occupation', 'relationship', 'race', 'sex', 'native-country']),
+        ('passthrough', passthrough_pipeline, ['age', 'capital-gain', 'capital-loss', 'hours-per-week']),
+       ],
+        remainder='drop'
+    )
+
+    return pipeline
 
 
 def process_data(
