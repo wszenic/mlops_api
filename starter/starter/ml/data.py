@@ -6,6 +6,8 @@ from sklearn.pipeline import FeatureUnion, make_pipeline
 from sklearn.preprocessing import LabelBinarizer, LabelEncoder, OneHotEncoder
 from xgboost import XGBClassifier
 
+from starter.starter.config import REMOVED_COLUMNS
+
 
 def create_preprocessing_pipeline():
     """ Create the preprocessing pipeline.
@@ -86,11 +88,18 @@ def process_data(
     else:
         y = np.array([])
 
+    # dropping obsolete columns with unknown properties
+    X.drop(REMOVED_COLUMNS, axis=1, errors='ignore', inplace=True)
+
     X_categorical = X[categorical_features].values
-    X_continuous = X.drop(*[categorical_features], axis=1)
+    X_continuous = X.drop(*[categorical_features], axis=1).reset_index(drop=True)
 
     if training is True:
-        encoder = OneHotEncoder(sparse=False, handle_unknown="ignore")
+        encoder = make_pipeline(
+            SimpleImputer(strategy='constant', missing_values='?', fill_value='np.nan'),
+            OneHotEncoder(sparse=False, handle_unknown="ignore")
+        )
+
         lb = LabelBinarizer()
         X_categorical = encoder.fit_transform(X_categorical)
         y = lb.fit_transform(y.values).ravel()
@@ -102,5 +111,10 @@ def process_data(
         except AttributeError:
             pass
 
-    X = np.concatenate([X_continuous, X_categorical], axis=1)
+    df_categorical = pd.DataFrame(
+        data=X_categorical, columns=encoder.get_feature_names_out()
+    )
+
+    X = pd.concat([X_continuous, df_categorical], axis=1)
+    X.columns = [*X_continuous.columns, *df_categorical.columns]
     return X, y, encoder, lb

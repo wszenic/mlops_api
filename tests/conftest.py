@@ -5,7 +5,6 @@ from sklearn.model_selection import train_test_split
 from starter.starter.ml.data import process_data
 from starter.starter.ml.model import train_model
 
-
 @pytest.fixture(scope="session")
 def mock_train_configuration():
     return {
@@ -27,7 +26,7 @@ def mock_train_configuration():
 @pytest.fixture(scope="session")
 def mock_test_data():
     """ Mock data, a small subset of the original data. """
-    return pd.read_csv("./test_data/test_set.csv")
+    return pd.read_csv("tests/test_data/test_set.csv")
 
 
 @pytest.fixture(scope="session")

@@ -12,7 +12,6 @@ class TestDataProcessor:
         return process_data(train, categorical_features=mock_train_configuration["categorical_features"],
                      label=mock_train_configuration["label"], training=True)
 
-
     def test_same_number_of_rows(self, mock_test_train_data, test_process_data):
         train, _ = mock_test_train_data
         X_train, _, _, _ = test_process_data
@@ -29,4 +28,4 @@ class TestDataProcessor:
         _, _, encoder, _ = test_process_data
 
         assert encoder is not None
-        assert type(encoder) == type(OneHotEncoder())
+        assert any([type(OneHotEncoder()) == type(x[1]) for x in encoder.steps])

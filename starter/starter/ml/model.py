@@ -1,8 +1,14 @@
+from collections import namedtuple
+
 import joblib
+import pandas as pd
 from sklearn.metrics import fbeta_score, precision_score, recall_score
 from sklearn.pipeline import Pipeline
 from xgboost import XGBClassifier
 
+from starter.starter.config import CATEGORICAL_FEATURES, MODEL_SAVE_PATH, PIPELINE_SAVE_PATH, LABEL_ENCODER_SAVE_PATH
+
+model_metrics = namedtuple("model_metrics", ["precision", "recall", "fbeta"])
 
 # Optional: implement hyperparameter tuning.
 def train_model(X_train, y_train) -> float:
@@ -46,7 +52,44 @@ def compute_model_metrics(y, preds):
     fbeta = fbeta_score(y, preds, beta=1, zero_division=1)
     precision = precision_score(y, preds, zero_division=1)
     recall = recall_score(y, preds, zero_division=1)
-    return precision, recall, fbeta
+    return model_metrics(precision, recall, fbeta)
+
+
+def inference_on_slices(model, X, Y, encoder, column_to_split_by):
+    """ Run model inferences on slices of the data and return the predictions.
+
+    Inputs
+    ------
+    model : ???
+        Trained machine learning model.
+    X : np.array
+        Data used for prediction.
+    column_to_split_by : str
+        Column name to split the data by.
+    Returns
+    -------
+    preds : pd.DataFrame
+        Predictions from the model.
+    """
+    preds = {}
+
+    id_in_pipeline = CATEGORICAL_FEATURES.index(column_to_split_by)
+    for column_level_name in encoder[1].categories_[id_in_pipeline]:
+        column_name_with_prefix = f"x{id_in_pipeline}_{column_level_name}"
+        filtering_mask = X[column_name_with_prefix] == 1
+        if all(~filtering_mask):
+            continue
+
+        x_slice = X[filtering_mask]
+        y_slice = Y[filtering_mask]
+
+        slice_preds = model.predict(x_slice)
+
+        preds[column_level_name] = compute_model_metrics(y_slice, slice_preds)
+
+    output = pd.DataFrame(preds).T
+    output.columns = ["precision", "recall", "fbeta"]
+    return output
 
 
 def inference(model, X):
@@ -75,4 +118,55 @@ def save_the_model(model):
     model :
         Trained machine learning model.
     """
-    joblib.dump(model, "./model/model.pkl")
+    joblib.dump(model, MODEL_SAVE_PATH)
+
+
+def load_the_model():
+    """ Read the model from a file
+    Returns
+    -------
+    model :
+        Trained machine learning model
+    """
+    return joblib.load(MODEL_SAVE_PATH)
+
+
+def save_the_pipeline(pipeline):
+    """ Save the pipeline to a file.
+
+    Inputs
+    ------
+    model :
+        Preprocessing pipeline
+    """
+    joblib.dump(pipeline, PIPELINE_SAVE_PATH)
+
+
+def load_the_pipeline():
+    """ Read the model from a file
+    Returns
+    -------
+    model :
+        Trained machine learning model
+    """
+    return joblib.load(PIPELINE_SAVE_PATH)
+
+def save_the_label_encoder(label_encoder):
+    """ Save the pipeline to a file.
+
+    Inputs
+    ------
+    model :
+        Preprocessing pipeline
+    """
+    joblib.dump(label_encoder, LABEL_ENCODER_SAVE_PATH)
+
+
+def load_the_label_encoder():
+    """ Read the model from a file
+    Returns
+    -------
+    model :
+        Trained machine learning model
+    """
+    return joblib.load(LABEL_ENCODER_SAVE_PATH)
