@@ -6,7 +6,8 @@ from sklearn.metrics import fbeta_score, precision_score, recall_score
 from sklearn.pipeline import Pipeline
 from xgboost import XGBClassifier
 
-from starter.starter.config import CATEGORICAL_FEATURES, MODEL_SAVE_PATH, PIPELINE_SAVE_PATH, LABEL_ENCODER_SAVE_PATH
+from starter.starter.config import Settings
+from starter.starter.modelling_config import CATEGORICAL_FEATURES
 
 model_metrics = namedtuple("model_metrics", ["precision", "recall", "fbeta"])
 
@@ -110,63 +111,70 @@ def inference(model, X):
     return preds
 
 
-def save_the_model(model):
+def save_the_model(model, settings: Settings):
     """ Save the model to a file.
 
     Inputs
     ------
     model :
         Trained machine learning model.
+    settings :
+        instance of settings class, containing paths
     """
-    joblib.dump(model, MODEL_SAVE_PATH)
+    joblib.dump(model, settings.model_save_path)
 
 
-def load_the_model():
+def load_the_model(settings):
     """ Read the model from a file
     Returns
     -------
-    model :
-        Trained machine learning model
+    settings :
+        instance of settings class, containing paths
     """
-    return joblib.load(MODEL_SAVE_PATH)
+    return joblib.load(settings.model_save_path)
 
 
-def save_the_pipeline(pipeline):
+def save_the_pipeline(pipeline, settings: Settings):
     """ Save the pipeline to a file.
 
     Inputs
     ------
     model :
         Preprocessing pipeline
+    settings :
+        instance of settings class, containing paths
     """
-    joblib.dump(pipeline, PIPELINE_SAVE_PATH)
+    joblib.dump(pipeline, settings.pipeline_save_path)
 
 
-def load_the_pipeline():
+def load_the_pipeline(settings: Settings):
     """ Read the model from a file
     Returns
     -------
-    model :
-        Trained machine learning model
+    settings :
+        instance of settings class, containing paths
     """
-    return joblib.load(PIPELINE_SAVE_PATH)
+    return joblib.load(settings.pipeline_save_path)
 
-def save_the_label_encoder(label_encoder):
+
+def save_the_label_encoder(label_encoder, settings: Settings):
     """ Save the pipeline to a file.
 
     Inputs
     ------
     model :
         Preprocessing pipeline
+    settings :
+        instance of settings class, containing paths
     """
-    joblib.dump(label_encoder, LABEL_ENCODER_SAVE_PATH)
+    joblib.dump(label_encoder, settings.label_encoder_save_path)
 
 
-def load_the_label_encoder():
+def load_the_label_encoder(settings: Settings):
     """ Read the model from a file
     Returns
     -------
-    model :
-        Trained machine learning model
+    settings :
+        instance of settings class, containing paths
     """
-    return joblib.load(LABEL_ENCODER_SAVE_PATH)
+    return joblib.load(settings.label_encoder_save_path)
