@@ -34,12 +34,13 @@ def train_the_model():
         test, categorical_features=CATEGORICAL_FEATURES, label="salary", training=False, encoder=encoder, lb=lb
     )
 
-    print(inference_on_slices(model, X_test, y_test, encoder, "native-country"))
+    results_on_slices = inference_on_slices(model, X_test, y_test, encoder, "native-country")
+    print(results_on_slices)
+    results_on_slices.to_csv("starter/model/slice_output.txt", index=False)
 
     test_pred = inference(model, X_test)
     test_scores = compute_model_metrics(y_test, test_pred)
     print(f"Train scores: {test_scores}")
-
 
     save_the_model(model, settings)
     save_the_pipeline(encoder, settings)

@@ -89,7 +89,8 @@ def inference_on_slices(model, X, Y, encoder, column_to_split_by):
         preds[column_level_name] = compute_model_metrics(y_slice, slice_preds)
 
     output = pd.DataFrame(preds).T
-    output.columns = ["precision", "recall", "fbeta"]
+    output.reset_index(drop=False, inplace=True)
+    output.columns = [column_to_split_by, "precision", "recall", "fbeta"]
     return output
 
 

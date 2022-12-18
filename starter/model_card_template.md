@@ -18,10 +18,13 @@ categorical features to one-hot encoded vectors.
 
 ## Evaluation Data
 
-Remaining 20% of the census dataset
+Remaining 20% of the census dataset, not included in the training sample described above
 
 ## Metrics
-_Please include the metrics used and your model's performance on those metrics._
+Model metrics at the time of training are as follows:
+ * **precision**=0.78
+ * **recall**=0.66
+ * **fbeta**=0.71
 
 ## Ethical Considerations
 

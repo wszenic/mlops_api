@@ -26,6 +26,25 @@ class ModelInput(BaseModel):
         df.columns = [x.replace("_", "-") for x in df.columns]
         return df
 
+    class Config:
+        schema_extra = {
+            "example":
+                {
+                    "age": 42,
+                    "workclass": "State-gov",
+                    "education": "Bachelors",
+                    "marital_status": "Never-married",
+                    "occupation": "Adm-clerical",
+                    "relationship": "Not-in-family",
+                    "race": "White",
+                    "sex": "Male",
+                    "capital_gain": 2174,
+                    "capital_loss": 0,
+                    "hours_per_week": 40,
+                    "native_country": "United-States"
+                }
+        }
+
 
 class ModelOutput(BaseModel):
     salary_class_id: int
