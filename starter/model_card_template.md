@@ -4,7 +4,10 @@ For additional information see the Model Card paper: https://arxiv.org/pdf/1810.
 
 ## Model Details
 
-Classification model, predicting the salary of the person based on the features like age, education, occupation, etc.
+Classification model, predicting the salary of the person based on the features like age, education, occupation, etc.  
+The most current version of the model is saved under `.starter/model/model.pkl` file.  
+The model is an gradient boosted classifier, developed using XGboost library. This is due to excellent handling of 
+tabular data by that type of model.
 
 ## Intended Use
 
